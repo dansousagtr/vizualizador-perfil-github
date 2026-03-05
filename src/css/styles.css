@@ -144,3 +144,37 @@ main {
 .container .profile-results.hide {
   display: none;
 }
+
+/* profile card layout */
+.profil-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  max-width: 32rem;
+  margin: var(--spacing-lg) auto;
+}
+
+.profile-avatar {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profile-info {
+  text-align: left;
+  flex: 1;
+}
+
+.profile-info h2 {
+  font-size: var(--font-xl);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.profile-info p {
+  font-size: var(--font-sm);
+  color: var(--muted-foreground);
+  margin: 0;
+}
