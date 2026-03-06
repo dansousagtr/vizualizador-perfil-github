@@ -1,51 +1,33 @@
-import { fetchGitHubUser } from './api.js';
-import {
-    getSearchInput,
-    clearSearchInput,
-    showLoader,
-    clearResults,
-    renderUserProfile,
-    onSearchButtonClick,
-    showAlert
-} from './dom.js';
+import { fetchGithubUser, fetchGithubUserRepos } from './githubApi.js';
+import { renderProfile } from './profileView.js';
 
-/**
- * Manipulador de busca de usuário GitHub
- */
-async function handleSearchUser() {
-    const userName = getSearchInput();
+const inputSearch = document.getElementById('input-search');
+const btnSearch = document.getElementById('btn-search');
+const profileResults = document.querySelector('.profile-results');
 
-    // Validação: verifica se o campo está vazio
+async function getUserProfile() {
+    const userName = inputSearch.value;
     if (!userName) {
-        showAlert('Por favor, digite um nome de usuário do Github');
+        alert('Por favor, digite um nome de usuário do GitHub.');
+        profileResults.innerHTML = "";
         return;
     }
-
+    profileResults.innerHTML = `<p class="loading">Carregando...</p>`;
     try {
-        // Mostra loader durante a busca
-        showLoader();
-
-        // Busca dados do usuário na API
-        const userData = await fetchGitHubUser(userName);
-
-        // Renderiza o perfil do usuário
-        renderUserProfile(userData);
-
-        // Limpa o campo de entrada
-        clearSearchInput();
-
+        const userData = await fetchGithubUser(userName);
+        const userRepos = await fetchGithubUserRepos(userName);
+        renderProfile(userData, userRepos, profileResults);
     } catch (error) {
-        // Limpa resultados em caso de erro
-        clearResults();
         console.error('Erro ao buscar o perfil do usuário:', error);
-
-        if (error.message === 'Usuário não encontrado') {
-            showAlert('Usuário não encontrado. Por favor, tente novamente.');
-        } else {
-            showAlert('Ocorreu um erro ao buscar o perfil do usuário. Por favor, tente novamente mais tarde.');
-        }
+        alert('Usuário não encontrado. Por favor, verifique o nome de usuário e tente novamente.');
+        profileResults.innerHTML = "";
     }
 }
 
-// Inicializa o event listener do botão de busca
-onSearchButtonClick(handleSearchUser);
+btnSearch.addEventListener('click', getUserProfile);
+
+inputSearch.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+        getUserProfile();
+    }
+});
